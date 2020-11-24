@@ -4,6 +4,14 @@ jobs:
       - get: dataworks-aws-tarball-adg-pr
         trigger: true
         version: every
+      - get: emr-ami
+        trigger: false
+      - get: emr-launcher-release
+        trigger: false
+      - get: s3-data-purger-release
+        trigger: false
+      - get: analytical-dataset-generation-exporter-release
+        trigger: false
       - put: dataworks-aws-tarball-adg-pr
         params:
           path: dataworks-aws-tarball-adg-pr

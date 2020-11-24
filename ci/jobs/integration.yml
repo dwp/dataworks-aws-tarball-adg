@@ -6,6 +6,22 @@ jobs:
         trigger: true
         passed:
           - qa
+      - get: emr-ami
+        trigger: true
+        passed:
+          - qa
+      - get: emr-launcher-release
+        trigger: true
+        passed:
+          - qa
+      - get: s3-data-purger-release
+        trigger: true
+        passed:
+          - qa
+      - get: analytical-dataset-generation-exporter-release
+        trigger: true
+        passed:
+          - qa
       - .: (( inject meta.plan.terraform-bootstrap ))
       - .: (( inject meta.plan.terraform-apply ))
         params:
