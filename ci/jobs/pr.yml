@@ -8,8 +8,6 @@ jobs:
         trigger: false
       - get: emr-launcher-release
         trigger: false
-      - get: s3-data-purger-release
-        trigger: false
       - get: analytical-dataset-generation-exporter-release
         trigger: false
       - put: dataworks-aws-tarball-adg-pr

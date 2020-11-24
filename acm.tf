@@ -1,13 +1,13 @@
-resource "aws_acm_certificate" "analytical-dataset-generator" {
+resource "aws_acm_certificate" "tarball_adg" {
   certificate_authority_arn = data.terraform_remote_state.aws_certificate_authority.outputs.root_ca.arn
-  domain_name               = "analytical-dataset-generator.${local.env_prefix[local.environment]}${local.dataworks_domain_name}"
+  domain_name               = "tarball-adg.${local.env_prefix[local.environment]}${local.dataworks_domain_name}"
 
   options {
     certificate_transparency_logging_preference = "DISABLED"
   }
 }
 
-data "aws_iam_policy_document" "analytical_dataset_acm" {
+data "aws_iam_policy_document" "tarball_adg_acm" {
   statement {
     effect = "Allow"
 
@@ -16,13 +16,13 @@ data "aws_iam_policy_document" "analytical_dataset_acm" {
     ]
 
     resources = [
-      aws_acm_certificate.analytical-dataset-generator.arn
+      aws_acm_certificate.tarball_adg.arn
     ]
   }
 }
 
-resource "aws_iam_policy" "analytical_dataset_acm" {
-  name        = "ACMExportDatasetGeneratorCert"
+resource "aws_iam_policy" "tarball_adg_acm" {
+  name        = "TarballADGACMExport"
   description = "Allow export of Dataset Generator certificate"
-  policy      = data.aws_iam_policy_document.analytical_dataset_acm.json
+  policy      = data.aws_iam_policy_document.tarball_adg_acm.json
 }

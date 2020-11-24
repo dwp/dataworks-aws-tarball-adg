@@ -48,49 +48,49 @@ cat > /opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.json <<CWAGEN
             "timezone": "UTC"
           },
           {
-            "file_path": "/var/log/adg/acm-cert-retriever.log",
+            "file_path": "/var/log/tarball-adg/acm-cert-retriever.log",
             "log_group_name": "$${cwa_bootstrap_loggrp_name}",
             "log_stream_name": "acm-cert-retriever.log",
             "timezone": "UTC"
           },
           {
-            "file_path": "/var/log/adg/nohup.log",
+            "file_path": "/var/log/tarball-adg/nohup.log",
             "log_group_name": "$${cwa_bootstrap_loggrp_name}",
             "log_stream_name": "nohup.log",
             "timezone": "UTC"
           },
           {
-            "file_path": "/var/log/adg/install-pycrypto.log",
+            "file_path": "/var/log/tarball-adg/install-pycrypto.log",
             "log_group_name": "$${cwa_bootstrap_loggrp_name}",
             "log_stream_name": "install-pycrypto.log",
             "timezone": "UTC"
           },
           {
-            "file_path": "/var/log/adg/install-requests.log",
+            "file_path": "/var/log/tarball-adg/install-requests.log",
             "log_group_name": "$${cwa_bootstrap_loggrp_name}",
             "log_stream_name": "install-requests.log",
             "timezone": "UTC"
           },
           {
-            "file_path": "/var/log/adg/install-boto3.log",
+            "file_path": "/var/log/tarball-adg/install-boto3.log",
             "log_group_name": "$${cwa_bootstrap_loggrp_name}",
             "log_stream_name": "install-boto3.log",
             "timezone": "UTC"
           },
           {
-            "file_path": "/var/log/adg/hive-tables-creation.log",
+            "file_path": "/var/log/tarball-adg/hive-tables-creation.log",
             "log_group_name": "$${cwa_steps_loggrp_name}",
             "log_stream_name": "hive-tables-creation.log",
             "timezone": "UTC"
           },
           {
-            "file_path": "/var/log/adg/create-hive-tables.log",
+            "file_path": "/var/log/tarball-adg/create-hive-tables.log",
             "log_group_name": "$${cwa_steps_loggrp_name}",
             "log_stream_name": "create-hive-tables.log",
             "timezone": "UTC"
           },
           {
-            "file_path": "/var/log/adg/generate-analytical-dataset.log",
+            "file_path": "/var/log/tarball-adg/generate-analytical-dataset.log",
             "log_group_name": "$${cwa_steps_loggrp_name}",
             "log_stream_name": "generate-analytical-dataset.log",
             "timezone": "UTC"
@@ -114,7 +114,7 @@ cat > /opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.json <<CWAGEN
             "timezone": "UTC"
           },
           {
-            "file_path": "/var/log/adg/adg_params.log",
+            "file_path": "/var/log/tarball-adg/adg_params.log",
             "log_group_name": "$${cwa_steps_loggrp_name}",
             "log_stream_name": "adg_params.log",
             "timezone": "UTC"

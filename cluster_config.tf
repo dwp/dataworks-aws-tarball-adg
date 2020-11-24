@@ -5,14 +5,14 @@ resource "aws_emr_security_configuration" "ebs_emrfs_em" {
 
 resource "aws_s3_bucket_object" "cluster" {
   bucket = data.terraform_remote_state.common.outputs.config_bucket.id
-  key    = "emr/adg/cluster.yaml"
+  key    = "emr/tarball-adg/cluster.yaml"
   content = templatefile("${path.module}/cluster_config/cluster.yaml.tpl",
     {
       s3_log_bucket          = data.terraform_remote_state.security-tools.outputs.logstore_bucket.id
       s3_log_prefix          = local.s3_log_prefix
       ami_id                 = var.emr_ami_id
-      service_role           = aws_iam_role.adg_emr_service.arn
-      instance_profile       = aws_iam_instance_profile.analytical_dataset_generator.arn
+      service_role           = aws_iam_role.tarball_adg_emr_service.arn
+      instance_profile       = aws_iam_instance_profile.tarball_adg.arn
       security_configuration = aws_emr_security_configuration.ebs_emrfs_em.id
       emr_release            = var.emr_release[local.environment]
     }
@@ -21,16 +21,16 @@ resource "aws_s3_bucket_object" "cluster" {
 
 resource "aws_s3_bucket_object" "instances" {
   bucket = data.terraform_remote_state.common.outputs.config_bucket.id
-  key    = "emr/adg/instances.yaml"
+  key    = "emr/tarball-adg/instances.yaml"
   content = templatefile("${path.module}/cluster_config/instances.yaml.tpl",
     {
       keep_cluster_alive  = local.keep_cluster_alive[local.environment]
-      add_master_sg       = aws_security_group.adg_common.id
-      add_slave_sg        = aws_security_group.adg_common.id
+      add_master_sg       = aws_security_group.tarball_adg_common.id
+      add_slave_sg        = aws_security_group.tarball_adg_common.id
       subnet_ids          = join(",", data.terraform_remote_state.internal_compute.outputs.adg_subnet.ids)
-      master_sg           = aws_security_group.adg_master.id
-      slave_sg            = aws_security_group.adg_slave.id
-      service_access_sg   = aws_security_group.adg_emr_service.id
+      master_sg           = aws_security_group.tarball_adg_master.id
+      slave_sg            = aws_security_group.tarball_adg_slave.id
+      service_access_sg   = aws_security_group.tarball_adg_emr_service.id
       instance_type       = var.emr_instance_type[local.environment]
       core_instance_count = var.emr_core_instance_count[local.environment]
     }
@@ -39,7 +39,7 @@ resource "aws_s3_bucket_object" "instances" {
 
 resource "aws_s3_bucket_object" "steps" {
   bucket = data.terraform_remote_state.common.outputs.config_bucket.id
-  key    = "emr/adg/steps.yaml"
+  key    = "emr/tarball-adg/steps.yaml"
   content = templatefile("${path.module}/cluster_config/steps.yaml.tpl",
     {
       s3_config_bucket = data.terraform_remote_state.common.outputs.config_bucket.id
@@ -64,7 +64,7 @@ locals {
 
 resource "aws_s3_bucket_object" "configurations" {
   bucket = data.terraform_remote_state.common.outputs.config_bucket.id
-  key    = "emr/adg/configurations.yaml"
+  key    = "emr/tarball-adg/configurations.yaml"
   content = templatefile("${path.module}/cluster_config/configurations.yaml.tpl",
     {
       s3_log_bucket                       = data.terraform_remote_state.security-tools.outputs.logstore_bucket.id

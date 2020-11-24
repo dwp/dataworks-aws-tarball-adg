@@ -2,10 +2,10 @@
 echo "Creating shared directory"
 sudo mkdir -p /opt/shared
 sudo mkdir -p /opt/emr
-sudo mkdir -p /var/log/adg
+sudo mkdir -p /var/log/tarball-adg
 sudo chown hadoop:hadoop /opt/emr
 sudo chown hadoop:hadoop /opt/shared
-sudo chown hadoop:hadoop /var/log/adg
+sudo chown hadoop:hadoop /var/log/tarball-adg
 echo "${VERSION}" > /opt/emr/version
 echo "${ADG_LOG_LEVEL}" > /opt/emr/log_level
 echo "${ENVIRONMENT_NAME}" > /opt/emr/environment
@@ -91,7 +91,7 @@ log_wrapper_message "Retrieving the ACM Certificate details"
     --truststore-password "$TRUSTSTORE_PASSWORD" \
     --truststore-aliases "${truststore_aliases}" \
     --truststore-certs "${truststore_certs}" \
-    --jks-only true >> /var/log/adg/acm-cert-retriever.log 2>&1
+    --jks-only true >> /var/log/tarball-adg/acm-cert-retriever.log 2>&1
 
 
 sudo -E /usr/local/bin/acm-cert-retriever \
@@ -99,16 +99,8 @@ sudo -E /usr/local/bin/acm-cert-retriever \
     --acm-key-passphrase "$ACM_KEY_PASSWORD" \
     --private-key-alias "${private_key_alias}" \
     --truststore-aliases "${truststore_aliases}" \
-    --truststore-certs "${truststore_certs}"  >> /var/log/adg/acm-cert-retriever.log 2>&1
-
-cd /etc/pki/ca-trust/source/anchors/
-sudo touch analytical_ca.pem
-sudo chown hadoop:hadoop /etc/pki/tls/private/"${private_key_alias}".key /etc/pki/tls/certs/"${private_key_alias}".crt /etc/pki/ca-trust/source/anchors/analytical_ca.pem
-TRUSTSTORE_ALIASES="${truststore_aliases}"
-for F in $(echo $TRUSTSTORE_ALIASES | sed "s/,/ /g"); do
- (sudo cat "$F.crt"; echo) >> analytical_ca.pem;
-done
+    --truststore-certs "${truststore_certs}"  >> /var/log/tarball-adg/acm-cert-retriever.log 2>&1
 
 log_wrapper_message "Completed the emr-setup.sh step of the EMR Cluster"
 
-) >> /var/log/adg/nohup.log 2>&1
+) >> /var/log/tarball-adg/nohup.log 2>&1

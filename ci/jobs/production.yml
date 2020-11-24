@@ -14,10 +14,6 @@ jobs:
         trigger: true
         passed:
           - preprod
-      - get: s3-data-purger-release
-        trigger: true
-        passed:
-          - preprod
       - get: analytical-dataset-generation-exporter-release
         trigger: true
         passed:

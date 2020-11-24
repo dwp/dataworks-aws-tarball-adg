@@ -14,7 +14,7 @@ data "aws_iam_role" "aws_config" {
   name = "aws_config"
 }
 
-data "aws_iam_policy_document" "adg_ebs_cmk" {
+data "aws_iam_policy_document" "tarball_adg_ebs_cmk" {
   statement {
     sid    = "EnableIAMPermissionsBreakglass"
     effect = "Allow"
@@ -100,7 +100,7 @@ data "aws_iam_policy_document" "adg_ebs_cmk" {
 
     principals {
       type        = "AWS"
-      identifiers = [aws_iam_role.adg_emr_service.arn, aws_iam_role.analytical_dataset_generator.arn]
+      identifiers = [aws_iam_role.tarball_adg_emr_service.arn, aws_iam_role.tarball_adg.arn]
     }
 
     actions = [
@@ -121,7 +121,7 @@ data "aws_iam_policy_document" "adg_ebs_cmk" {
 
     principals {
       type        = "AWS"
-      identifiers = [aws_iam_role.adg_emr_service.arn, aws_iam_role.analytical_dataset_generator.arn]
+      identifiers = [aws_iam_role.tarball_adg_emr_service.arn, aws_iam_role.tarball_adg.arn]
     }
 
     actions = ["kms:CreateGrant"]
@@ -136,12 +136,12 @@ data "aws_iam_policy_document" "adg_ebs_cmk" {
   }
 }
 
-resource "aws_kms_key" "adg_ebs_cmk" {
-  description             = "Encrypts ADG EBS volumes"
+resource "aws_kms_key" "tarball_adg_ebs_cmk" {
+  description             = "Encrypts Tarball ADG EBS volumes"
   deletion_window_in_days = 7
   is_enabled              = true
   enable_key_rotation     = true
-  policy                  = data.aws_iam_policy_document.adg_ebs_cmk.json
+  policy                  = data.aws_iam_policy_document.tarball_adg_ebs_cmk.json
 
 
   # ProtectsSensitiveData = "True" - the ADG cluster decrypts sensitive data
@@ -150,18 +150,18 @@ resource "aws_kms_key" "adg_ebs_cmk" {
   tags = merge(
     local.tags,
     {
-      Name                  = "adg_ebs_cmk"
+      Name                  = "tarball_adg_ebs_cmk"
       ProtectsSensitiveData = "True"
     }
   )
 }
 
-resource "aws_kms_alias" "adg_ebs_cmk" {
-  name          = "alias/adg_ebs_cmk"
-  target_key_id = aws_kms_key.adg_ebs_cmk.key_id
+resource "aws_kms_alias" "tarball_adg_ebs_cmk" {
+  name          = "alias/tarball_adg_ebs_cmk"
+  target_key_id = aws_kms_key.tarball_adg_ebs_cmk.key_id
 }
 
-data "aws_iam_policy_document" "analytical_dataset_ebs_cmk_encrypt" {
+data "aws_iam_policy_document" "tarball_adg_ebs_cmk_encrypt" {
   statement {
     effect = "Allow"
 
@@ -173,7 +173,7 @@ data "aws_iam_policy_document" "analytical_dataset_ebs_cmk_encrypt" {
       "kms:DescribeKey",
     ]
 
-    resources = [aws_kms_key.adg_ebs_cmk.arn]
+    resources = [aws_kms_key.tarball_adg_ebs_cmk.arn]
   }
 
   statement {
@@ -181,7 +181,7 @@ data "aws_iam_policy_document" "analytical_dataset_ebs_cmk_encrypt" {
 
     actions = ["kms:CreateGrant"]
 
-    resources = [aws_kms_key.adg_ebs_cmk.arn]
+    resources = [aws_kms_key.tarball_adg_ebs_cmk.arn]
     condition {
       test     = "Bool"
       variable = "kms:GrantIsForAWSResource"
@@ -190,8 +190,8 @@ data "aws_iam_policy_document" "analytical_dataset_ebs_cmk_encrypt" {
   }
 }
 
-resource "aws_iam_policy" "analytical_dataset_ebs_cmk_encrypt" {
-  name        = "AnalyticalDatasetGeneratorEbsCmkEncrypt"
-  description = "Allow encryption and decryption using the Analytical Dataset Generator EBS CMK"
-  policy      = data.aws_iam_policy_document.analytical_dataset_ebs_cmk_encrypt.json
+resource "aws_iam_policy" "tarball_adg_ebs_cmk_encrypt" {
+  name        = "TarballADGEbsCmkEncrypt"
+  description = "Allow encryption and decryption using the Tarball ADG EBS CMK"
+  policy      = data.aws_iam_policy_document.tarball_adg_ebs_cmk_encrypt.json
 }

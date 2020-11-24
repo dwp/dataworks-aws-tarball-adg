@@ -45,4 +45,4 @@ $METRICS_FILEPATH/$MAVEN/bin/mvn -f $METRICS_FILEPATH/pom.xml dependency:copy-de
 cat /tmp/adg-exporter.b64 | base64 -d > $METRICS_FILEPATH/dependencies/adg-exporter.jar
 rm /tmp/adg-exporter.b64
 
-) >> /var/log/adg/nohup.log 2>&1
+) >> /var/log/tarball-adg/nohup.log 2>&1

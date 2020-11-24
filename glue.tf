@@ -1,26 +1,26 @@
-resource "aws_glue_catalog_database" "analytical_dataset_generation" {
-  name        = "analytical_dataset_generation"
-  description = "Database for the Analytical Dataset"
+resource "aws_glue_catalog_database" "tarball_adg" {
+  name        = "tarball_adg"
+  description = "Database for the Tarball ADG"
 }
 
-output "analytical_dataset_generation" {
+output "tarball_adg" {
   value = {
-    job_name = aws_glue_catalog_database.analytical_dataset_generation.name
+    job_name = aws_glue_catalog_database.tarball_adg.name
   }
 }
 
-resource "aws_glue_catalog_database" "analytical_dataset_generation_staging" {
-  name        = "analytical_dataset_generation_staging"
-  description = "Staging Database for analytical dataset generation"
+resource "aws_glue_catalog_database" "tarball_adg_staging" {
+  name        = "tarball_adg_staging"
+  description = "Staging Database for Tarball ADG"
 }
 
-output "analytical_dataset_generation_staging" {
+output "tarball_adg_staging" {
   value = {
-    job_name = aws_glue_catalog_database.analytical_dataset_generation_staging.name
+    job_name = aws_glue_catalog_database.tarball_adg_staging.name
   }
 }
 
-data "aws_iam_policy_document" "analytical_dataset_generator_gluetables_write" {
+data "aws_iam_policy_document" "tarball_adg_gluetables_write" {
   statement {
     effect = "Allow"
 
@@ -34,23 +34,23 @@ data "aws_iam_policy_document" "analytical_dataset_generator_gluetables_write" {
     ]
 
     resources = [
-      "arn:aws:glue:${var.region}:${local.account[local.environment]}:table/analytical_dataset_generation_staging/*",
-      "arn:aws:glue:${var.region}:${local.account[local.environment]}:table/analytical_dataset_generation/*",
+      "arn:aws:glue:${var.region}:${local.account[local.environment]}:table/tarball_adg_staging/*",
+      "arn:aws:glue:${var.region}:${local.account[local.environment]}:table/tarball_adg/*",
       "arn:aws:glue:${var.region}:${local.account[local.environment]}:database/default",
       "arn:aws:glue:${var.region}:${local.account[local.environment]}:table/default/*",
-      "arn:aws:glue:${var.region}:${local.account[local.environment]}:database/analytical_dataset_generation_staging",
-      "arn:aws:glue:${var.region}:${local.account[local.environment]}:database/analytical_dataset_generation",
+      "arn:aws:glue:${var.region}:${local.account[local.environment]}:database/tarball_adg_staging",
+      "arn:aws:glue:${var.region}:${local.account[local.environment]}:database/tarball_adg",
       "arn:aws:glue:${var.region}:${local.account[local.environment]}:database/global_temp",
       "arn:aws:glue:${var.region}:${local.account[local.environment]}:catalog",
-      "arn:aws:glue:${var.region}:${local.account[local.environment]}:userDefinedFunction/analytical_dataset_generation_staging/*",
-      "arn:aws:glue:${var.region}:${local.account[local.environment]}:userDefinedFunction/analytical_dataset_generation/*",
+      "arn:aws:glue:${var.region}:${local.account[local.environment]}:userDefinedFunction/tarball_adg_staging/*",
+      "arn:aws:glue:${var.region}:${local.account[local.environment]}:userDefinedFunction/tarball_adg/*",
       "arn:aws:glue:${var.region}:${local.account[local.environment]}:userDefinedFunction/default/*"
     ]
   }
 }
 
-resource "aws_iam_policy" "analytical_dataset_generator_gluetables_write" {
-  name        = "AnalyticalDatasetGeneratorGlueTablesWrite"
-  description = "Allow creation and deletion of ADG Glue tables"
-  policy      = data.aws_iam_policy_document.analytical_dataset_generator_gluetables_write.json
+resource "aws_iam_policy" "tarball_adg_gluetables_write" {
+  name        = "TarballADGGlueTablesWrite"
+  description = "Allow creation and deletion of Tarball ADG Glue tables"
+  policy      = data.aws_iam_policy_document.tarball_adg_gluetables_write.json
 }

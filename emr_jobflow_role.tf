@@ -11,53 +11,104 @@ data "aws_iam_policy_document" "ec2_assume_role" {
   }
 }
 
-resource "aws_iam_role" "analytical_dataset_generator" {
-  name               = "analytical_dataset_generator"
+resource "aws_iam_role" "tarball_adg" {
+  name               = "tarball_adg"
   assume_role_policy = data.aws_iam_policy_document.ec2_assume_role.json
   tags               = local.tags
 }
 
-resource "aws_iam_instance_profile" "analytical_dataset_generator" {
-  name = "analytical_dataset_generator"
-  role = aws_iam_role.analytical_dataset_generator.id
+resource "aws_iam_instance_profile" "tarball_adg" {
+  name = "tarball_adg"
+  role = aws_iam_role.tarball_adg.id
 }
 
 resource "aws_iam_role_policy_attachment" "ec2_for_ssm_attachment" {
-  role       = aws_iam_role.analytical_dataset_generator.name
+  role       = aws_iam_role.tarball_adg.name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonEC2RoleforSSM"
 }
 
 resource "aws_iam_role_policy_attachment" "amazon_ssm_managed_instance_core" {
-  role       = aws_iam_role.analytical_dataset_generator.name
+  role       = aws_iam_role.tarball_adg.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
 }
 
-resource "aws_iam_role_policy_attachment" "analytical_dataset_generator_ebs_cmk" {
-  role       = aws_iam_role.analytical_dataset_generator.name
-  policy_arn = aws_iam_policy.analytical_dataset_ebs_cmk_encrypt.arn
+resource "aws_iam_role_policy_attachment" "tarball_adg_ebs_cmk" {
+  role       = aws_iam_role.tarball_adg.name
+  policy_arn = aws_iam_policy.tarball_adg_ebs_cmk_encrypt.arn
 }
 
-resource "aws_iam_role_policy_attachment" "analytical_dataset_generator_write_parquet" {
-  role       = aws_iam_role.analytical_dataset_generator.name
-  policy_arn = "arn:aws:iam::${local.account[local.environment]}:policy/AnalyticalDatasetGeneratorWriteParquet" // TODO: Change this to allow writes to tarball generator output directory
+data "aws_iam_policy_document" "tarball_adg_write_parquet" {
+  statement {
+    effect = "Allow"
+
+    actions = [
+      "s3:GetBucketLocation",
+      "s3:ListBucket",
+    ]
+
+    resources = [
+      data.terraform_remote_state.adg.outputs.published_bucket.arn,
+    ]
+  }
+
+  statement {
+    effect = "Allow"
+
+    actions = [
+      "s3:GetObject*",
+      "s3:DeleteObject*",
+      "s3:PutObject*",
+    ]
+
+    resources = [
+      "${data.terraform_remote_state.adg.outputs.published_bucket.arn}/tarball-analytical-dataset/*",
+    ]
+  }
+
+  statement {
+    effect = "Allow"
+
+    actions = [
+      "kms:Encrypt",
+      "kms:Decrypt",
+      "kms:ReEncrypt*",
+      "kms:GenerateDataKey*",
+      "kms:DescribeKey",
+    ]
+
+    resources = [
+      data.terraform_remote_state.adg.outputs.published_bucket_cmk.arn,
+    ]
+  }
 }
 
-resource "aws_iam_role_policy_attachment" "analytical_dataset_generator_gluetables" {
-  role       = aws_iam_role.analytical_dataset_generator.name
-  policy_arn = aws_iam_policy.analytical_dataset_generator_gluetables_write.arn
+resource "aws_iam_policy" "tarball_adg_write_parquet" {
+  name        = "TarballADGWriteParquet"
+  description = "Allow writing of Tarball ADG parquet files"
+  policy      = data.aws_iam_policy_document.tarball_adg_write_parquet.json
 }
 
-resource "aws_iam_role_policy_attachment" "analytical_dataset_generator_acm" {
-  role       = aws_iam_role.analytical_dataset_generator.name
-  policy_arn = aws_iam_policy.analytical_dataset_acm.arn
+resource "aws_iam_role_policy_attachment" "tarball_adg_write_parquet" {
+  role       = aws_iam_role.tarball_adg.name
+  policy_arn = aws_iam_policy.tarball_adg_write_parquet.arn
 }
 
-resource "aws_iam_role_policy_attachment" "emr_analytical_dataset_secretsmanager" {
-  role       = aws_iam_role.analytical_dataset_generator.name
-  policy_arn = aws_iam_policy.analytical_dataset_secretsmanager.arn
+resource "aws_iam_role_policy_attachment" "tarball_adg_gluetables" {
+  role       = aws_iam_role.tarball_adg.name
+  policy_arn = aws_iam_policy.tarball_adg_gluetables_write.arn
 }
 
-data "aws_iam_policy_document" "analytical_dataset_generator_write_logs" {
+resource "aws_iam_role_policy_attachment" "tarball_adg_acm" {
+  role       = aws_iam_role.tarball_adg.name
+  policy_arn = aws_iam_policy.tarball_adg_acm.arn
+}
+
+resource "aws_iam_role_policy_attachment" "emr_tarball_adg_secretsmanager" {
+  role       = aws_iam_role.tarball_adg.name
+  policy_arn = aws_iam_policy.tarball_adg_secretsmanager.arn
+}
+
+data "aws_iam_policy_document" "tarball_adg_write_logs" {
   statement {
     effect = "Allow"
 
@@ -86,18 +137,18 @@ data "aws_iam_policy_document" "analytical_dataset_generator_write_logs" {
   }
 }
 
-resource "aws_iam_policy" "analytical_dataset_generator_write_logs" {
-  name        = "AnalyticalDatasetGeneratorWriteLogs"
-  description = "Allow writing of Analytical Dataset logs"
-  policy      = data.aws_iam_policy_document.analytical_dataset_generator_write_logs.json
+resource "aws_iam_policy" "tarball_adg_write_logs" {
+  name        = "TarballADGWriteLogs"
+  description = "Allow writing of Tarball ADG logs"
+  policy      = data.aws_iam_policy_document.tarball_adg_write_logs.json
 }
 
-resource "aws_iam_role_policy_attachment" "analytical_dataset_generator_write_logs" {
-  role       = aws_iam_role.analytical_dataset_generator.name
-  policy_arn = aws_iam_policy.analytical_dataset_generator_write_logs.arn
+resource "aws_iam_role_policy_attachment" "tarball_adg_write_logs" {
+  role       = aws_iam_role.tarball_adg.name
+  policy_arn = aws_iam_policy.tarball_adg_write_logs.arn
 }
 
-data "aws_iam_policy_document" "analytical_dataset_generator_read_config" {
+data "aws_iam_policy_document" "tarball_adg_read_config" {
   statement {
     effect = "Allow"
 
@@ -137,18 +188,18 @@ data "aws_iam_policy_document" "analytical_dataset_generator_read_config" {
   }
 }
 
-resource "aws_iam_policy" "analytical_dataset_generator_read_config" {
-  name        = "AnalyticalDatasetGeneratorReadConfig"
-  description = "Allow reading of Analytical Dataset config files"
-  policy      = data.aws_iam_policy_document.analytical_dataset_generator_read_config.json
+resource "aws_iam_policy" "tarball_adg_read_config" {
+  name        = "TarballADGReadConfig"
+  description = "Allow reading of Tarball ADG config files"
+  policy      = data.aws_iam_policy_document.tarball_adg_read_config.json
 }
 
-resource "aws_iam_role_policy_attachment" "analytical_dataset_generator_read_config" {
-  role       = aws_iam_role.analytical_dataset_generator.name
-  policy_arn = aws_iam_policy.analytical_dataset_generator_read_config.arn
+resource "aws_iam_role_policy_attachment" "tarball_adg_read_config" {
+  role       = aws_iam_role.tarball_adg.name
+  policy_arn = aws_iam_policy.tarball_adg_read_config.arn
 }
 
-data "aws_iam_policy_document" "analytical_dataset_generator_read_artefacts" {
+data "aws_iam_policy_document" "tarball_adg_read_artefacts" {
   statement {
     effect = "Allow"
 
@@ -188,18 +239,18 @@ data "aws_iam_policy_document" "analytical_dataset_generator_read_artefacts" {
   }
 }
 
-resource "aws_iam_policy" "analytical_dataset_generator_read_artefacts" {
-  name        = "AnalyticalDatasetGeneratorReadArtefacts"
-  description = "Allow reading of Analytical Dataset software artefacts"
-  policy      = data.aws_iam_policy_document.analytical_dataset_generator_read_artefacts.json
+resource "aws_iam_policy" "tarball_adg_read_artefacts" {
+  name        = "TarballADGReadArtefacts"
+  description = "Allow reading of Tarball ADG software artefacts"
+  policy      = data.aws_iam_policy_document.tarball_adg_read_artefacts.json
 }
 
-resource "aws_iam_role_policy_attachment" "analytical_dataset_generator_read_artefacts" {
-  role       = aws_iam_role.analytical_dataset_generator.name
-  policy_arn = aws_iam_policy.analytical_dataset_generator_read_artefacts.arn
+resource "aws_iam_role_policy_attachment" "tarball_adg_read_artefacts" {
+  role       = aws_iam_role.tarball_adg.name
+  policy_arn = aws_iam_policy.tarball_adg_read_artefacts.arn
 }
 
-data "aws_iam_policy_document" "analytical_dataset_generator_write_dynamodb" {
+data "aws_iam_policy_document" "tarball_adg_write_dynamodb" {
   statement {
     effect = "Allow"
 
@@ -214,18 +265,18 @@ data "aws_iam_policy_document" "analytical_dataset_generator_write_dynamodb" {
   }
 }
 
-resource "aws_iam_policy" "analytical_dataset_generator_write_dynamodb" {
-  name        = "AnalyticalDatasetGeneratorDynamoDB"
-  description = "Allows read and write access to ADG's EMRFS DynamoDB table"
-  policy      = data.aws_iam_policy_document.analytical_dataset_generator_write_dynamodb.json
+resource "aws_iam_policy" "tarball_adg_write_dynamodb" {
+  name        = "TarballADGDynamoDB"
+  description = "Allows read and write access to Tarball ADG's EMRFS DynamoDB table"
+  policy      = data.aws_iam_policy_document.tarball_adg_write_dynamodb.json
 }
 
-resource "aws_iam_role_policy_attachment" "analytical_dataset_generator_dynamodb" {
-  role       = aws_iam_role.analytical_dataset_generator.name
-  policy_arn = aws_iam_policy.analytical_dataset_generator_write_dynamodb.arn
+resource "aws_iam_role_policy_attachment" "tarball_adg_dynamodb" {
+  role       = aws_iam_role.tarball_adg.name
+  policy_arn = aws_iam_policy.tarball_adg_write_dynamodb.arn
 }
 
-data "aws_iam_policy_document" "analytical_dataset_generator_metadata_change" {
+data "aws_iam_policy_document" "tarball_adg_metadata_change" {
   statement {
     effect = "Allow"
 
@@ -239,18 +290,18 @@ data "aws_iam_policy_document" "analytical_dataset_generator_metadata_change" {
   }
 }
 
-resource "aws_iam_policy" "analytical_dataset_generator_metadata_change" {
-  name        = "AnalyticalDatasetGeneratorMetadataOptions"
+resource "aws_iam_policy" "tarball_adg_metadata_change" {
+  name        = "TarballADGMetadataOptions"
   description = "Allow editing of Metadata Options"
-  policy      = data.aws_iam_policy_document.analytical_dataset_generator_metadata_change.json
+  policy      = data.aws_iam_policy_document.tarball_adg_metadata_change.json
 }
 
-resource "aws_iam_role_policy_attachment" "analytical_dataset_generator_metadata_change" {
-  role       = aws_iam_role.analytical_dataset_generator.name
-  policy_arn = aws_iam_policy.analytical_dataset_generator_metadata_change.arn
+resource "aws_iam_role_policy_attachment" "tarball_adg_metadata_change" {
+  role       = aws_iam_role.tarball_adg.name
+  policy_arn = aws_iam_policy.tarball_adg_metadata_change.arn
 }
 
-data "aws_iam_policy_document" "analytical_dataset_generator_read_htme" {
+data "aws_iam_policy_document" "tarball_adg_read_tarballs" {
   statement {
     effect = "Allow"
 
@@ -272,7 +323,7 @@ data "aws_iam_policy_document" "analytical_dataset_generator_read_htme" {
     ]
 
     resources = [
-      format("arn:aws:s3:::%s/%s/*", data.terraform_remote_state.ingest.outputs.s3_buckets.htme_bucket, data.terraform_remote_state.ingest.outputs.s3_buckets.htme_prefix)
+      format("arn:aws:s3:::%s/%s/*", data.terraform_remote_state.ingest.outputs.s3_buckets.htme_bucket, "business-data/tarball-mongo/ucdata/*")
     ]
   }
 
@@ -290,32 +341,32 @@ data "aws_iam_policy_document" "analytical_dataset_generator_read_htme" {
   }
 }
 
-resource "aws_iam_policy" "analytical_dataset_generator_read_htme" {
-  name        = "AnalyticalDatasetGeneratorReadHTMEOutputFiles"
-  description = "Allow reading of HTME output files"
-  policy      = data.aws_iam_policy_document.analytical_dataset_generator_read_htme.json
+resource "aws_iam_policy" "tarball_adg_read_tarballs" {
+  name        = "TarballADGReadTarballs"
+  description = "Allow reading of Tarball Ingestion output files"
+  policy      = data.aws_iam_policy_document.tarball_adg_read_tarballs.json
 }
 
-resource "aws_iam_role_policy_attachment" "analytical_dataset_generator_read_htme" {
-  role       = aws_iam_role.analytical_dataset_generator.name
-  policy_arn = aws_iam_policy.analytical_dataset_generator_read_htme.arn
+resource "aws_iam_role_policy_attachment" "tarball_adg_read_tarballs" {
+  role       = aws_iam_role.tarball_adg.name
+  policy_arn = aws_iam_policy.tarball_adg_read_tarballs.arn
 }
 
 
-resource "aws_iam_policy" "analytical_dataset_generator_publish_sns" {
-  name        = "AnalyticalDatasetGeneratorPublishSns"
-  description = "Allow ADG to publish SNS messages"
-  policy      = data.aws_iam_policy_document.adg_sns_topic_policy_for_completion_status.json
+resource "aws_iam_policy" "tarball_adg_publish_sns" {
+  name        = "TarballADGPublishSNS"
+  description = "Allow Tarball ADG to publish SNS messages"
+  policy      = data.aws_iam_policy_document.tarball_adg_sns_topic_policy_for_completion_status.json
 }
 
-resource "aws_iam_role_policy_attachment" "analytical_dataset_generator_publish_sns" {
-  role       = aws_iam_role.analytical_dataset_generator.name
-  policy_arn = aws_iam_policy.analytical_dataset_generator_publish_sns.arn
+resource "aws_iam_role_policy_attachment" "tarball_adg_publish_sns" {
+  role       = aws_iam_role.tarball_adg.name
+  policy_arn = aws_iam_policy.tarball_adg_publish_sns.arn
 }
 
-data "aws_iam_policy_document" "adg_sns_topic_policy_for_completion_status" {
+data "aws_iam_policy_document" "tarball_adg_sns_topic_policy_for_completion_status" {
   statement {
-    sid = "AdgCompletionStatusSns"
+    sid = "TarballADGCompletionStatusSNS"
 
     actions = [
       "SNS:Publish",
@@ -324,7 +375,7 @@ data "aws_iam_policy_document" "adg_sns_topic_policy_for_completion_status" {
     effect = "Allow"
 
     resources = [
-      aws_sns_topic.adg_completion_status_sns.arn,
+      aws_sns_topic.tarball_adg_completion_status_sns.arn,
     ]
   }
 }
