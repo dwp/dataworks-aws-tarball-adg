@@ -1,5 +1,5 @@
 resource "aws_emr_security_configuration" "ebs_emrfs_em" {
-  name          = "adg_ebs_emrfs"
+  name          = "tarball_adg_ebs_emrfs"
   configuration = jsonencode(local.ebs_emrfs_em)
 }
 
