@@ -106,19 +106,6 @@ resource "aws_security_group_rule" "egress_adg_to_dks" {
   security_group_id = aws_security_group.tarball_adg_common.id
 }
 
-resource "aws_security_group_rule" "ingress_to_dks" {
-  provider    = aws.crypto
-  description = "Allow inbound requests to DKS from adg"
-  type        = "ingress"
-  protocol    = "tcp"
-  from_port   = 8443
-  to_port     = 8443
-
-  cidr_blocks = data.terraform_remote_state.internal_compute.outputs.adg_subnet.cidr_blocks
-
-  security_group_id = data.terraform_remote_state.crypto.outputs.dks_sg_id[local.environment]
-}
-
 # https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-man-sec-groups.html#emr-sg-elasticmapreduce-sa-private
 resource "aws_security_group_rule" "emr_service_ingress_master" {
   description              = "Allow EMR master nodes to reach the EMR service"
