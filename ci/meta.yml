@@ -48,7 +48,6 @@ meta:
             - |
               export TF_VAR_emr_ami_id=$(cat ../emr-ami/id)
               cp ../terraform-bootstrap/terraform.tf .
-              export TF_VAR_s3_data_purger_zip="{base_path = \"../s3-data-purger-release\", version = \"$(cat ../s3-data-purger-release/version)\"}"
               export TF_VAR_emr_launcher_zip="{base_path = \"../emr-launcher-release\", version = \"$(cat ../emr-launcher-release/version)\"}"
               export TF_VAR_analytical_dataset_generation_exporter_jar="{base_path = \"../analytical-dataset-generation-exporter-release\", version = \"$(ls ../analytical-dataset-generation-exporter-release/*.jar | sed -e 's/^.*exporter-//' -e 's/.jar$//')\"}"
               terraform workspace show
@@ -61,7 +60,6 @@ meta:
           - name: terraform-bootstrap
           - name: emr-ami
           - name: emr-launcher-release
-          - name: s3-data-purger-release
           - name: analytical-dataset-generation-exporter-release
     terraform-plan:
       task: terraform-plan
@@ -74,7 +72,6 @@ meta:
             - |
               export TF_VAR_emr_ami_id=$(cat ../emr-ami/id)
               cp ../terraform-bootstrap/terraform.tf .
-              export TF_VAR_s3_data_purger_zip="{base_path = \"../s3-data-purger-release\", version = \"$(cat ../s3-data-purger-release/version)\"}"
               export TF_VAR_emr_launcher_zip="{base_path = \"../emr-launcher-release\", version = \"$(cat ../emr-launcher-release/version)\"}"
               export TF_VAR_analytical_dataset_generation_exporter_jar="{base_path = \"../analytical-dataset-generation-exporter-release\", version = \"$(ls ../analytical-dataset-generation-exporter-release/*.jar | sed -e 's/^.*exporter-//' -e 's/.jar$//')\"}"
               terraform workspace show
@@ -86,7 +83,6 @@ meta:
           - name: terraform-bootstrap
           - name: emr-ami
           - name: emr-launcher-release
-          - name: s3-data-purger-release
           - name: analytical-dataset-generation-exporter-release
       params:
         DETAILED_EXITCODE: -detailed-exitcode
