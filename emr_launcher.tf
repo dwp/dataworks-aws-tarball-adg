@@ -32,18 +32,6 @@ resource "aws_lambda_function" "tarball_adg_emr_launcher" {
   }
 }
 
-resource "aws_cloudwatch_event_rule" "tarball_adg_emr_launcher_schedule" {
-  name                = "tarball_adg_emr_launcher_schedule"
-  description         = "Triggers Tarball ADG EMR Launcher"
-  schedule_expression = format("cron(%s)", local.tarball_adg_emr_lambda_schedule[local.environment])
-}
-
-resource "aws_cloudwatch_event_target" "tarball_adg_emr_launcher_target" {
-  rule      = aws_cloudwatch_event_rule.tarball_adg_emr_launcher_schedule.name
-  target_id = "tarball_adg_emr_launcher_target"
-  arn       = aws_lambda_function.tarball_adg_emr_launcher.arn
-}
-
 resource "aws_iam_role" "tarball_adg_emr_launcher_lambda_role" {
   name               = "tarball_adg_emr_launcher_lambda_role"
   assume_role_policy = data.aws_iam_policy_document.tarball_adg_emr_launcher_assume_policy.json
