@@ -78,7 +78,7 @@ resource "aws_s3_bucket_object" "send_notification_script" {
   key    = "component/tarball-adg/send_notification.py"
   content = templatefile("${path.module}/steps/send_notification.py",
     {
-      publish_bucket   = data.terraform_remote_state.adg.outputs.published_bucket.id
+      publish_bucket   = data.terraform_remote_state.common.outputs.published_bucket.id
       status_topic_arn = aws_sns_topic.tarball_adg_completion_status_sns.arn
       log_path         = "/var/log/tarball-adg/adg_params.log"
     }

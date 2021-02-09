@@ -69,7 +69,7 @@ resource "aws_s3_bucket_object" "configurations" {
     {
       s3_log_bucket                       = data.terraform_remote_state.security-tools.outputs.logstore_bucket.id
       s3_log_prefix                       = local.s3_log_prefix
-      s3_published_bucket                 = data.terraform_remote_state.adg.outputs.published_bucket.id
+      s3_published_bucket                 = data.terraform_remote_state.common.outputs.published_bucket.id
       s3_ingest_bucket                    = data.terraform_remote_state.ingest.outputs.s3_buckets.input_bucket
       hbase_root_path                     = local.hbase_root_path
       proxy_no_proxy                      = replace(replace(local.no_proxy, ",", "|"), ".s3", "*.s3")
@@ -89,8 +89,8 @@ resource "aws_s3_bucket_object" "configurations" {
       spark_kyro_buffer                   = local.spark_kyro_buffer
       hive_metsatore_username             = var.metadata_store_adg_writer_username
       hive_metastore_pwd                  = "metadata-store-adg-writer"
-      hive_metastore_endpoint             = data.terraform_remote_state.adg.outputs.hive_metastore.rds_cluster.endpoint
-      hive_metastore_database_name        = data.terraform_remote_state.adg.outputs.hive_metastore.database_name
+      hive_metastore_endpoint             = data.terraform_remote_state.common.outputs.hive_metastore.rds_cluster.endpoint
+      hive_metastore_database_name        = data.terraform_remote_state.common.outputs.hive_metastore.database_name
       hive_metastore_backend              = local.hive_metastore_backend[local.environment]
     }
   )
