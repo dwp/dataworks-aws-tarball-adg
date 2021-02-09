@@ -89,8 +89,8 @@ resource "aws_s3_bucket_object" "configurations" {
       spark_kyro_buffer                   = local.spark_kyro_buffer
       hive_metsatore_username             = var.metadata_store_adg_writer_username
       hive_metastore_pwd                  = "metadata-store-adg-writer"
-      hive_metastore_endpoint             = data.terraform_remote_state.common.outputs.hive_metastore.rds_cluster.endpoint
-      hive_metastore_database_name        = data.terraform_remote_state.common.outputs.hive_metastore.database_name
+      hive_metastore_endpoint             = data.terraform_remote_state.adg.outputs.hive_metastore.rds_cluster.endpoint
+      hive_metastore_database_name        = data.terraform_remote_state.adg.outputs.hive_metastore.database_name
       hive_metastore_backend              = local.hive_metastore_backend[local.environment]
     }
   )
