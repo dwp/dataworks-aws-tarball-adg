@@ -27,7 +27,7 @@ resource "aws_s3_bucket_object" "instances" {
       keep_cluster_alive  = local.keep_cluster_alive[local.environment]
       add_master_sg       = aws_security_group.tarball_adg_common.id
       add_slave_sg        = aws_security_group.tarball_adg_common.id
-      subnet_ids          = join(",", data.terraform_remote_state.internal_compute.outputs.adg_subnet.ids)
+      subnet_ids          = join(",", data.terraform_remote_state.internal_compute.outputs.adg_subnet_new.ids)
       master_sg           = aws_security_group.tarball_adg_master.id
       slave_sg            = aws_security_group.tarball_adg_slave.id
       service_access_sg   = aws_security_group.tarball_adg_emr_service.id
@@ -69,7 +69,7 @@ resource "aws_s3_bucket_object" "configurations" {
     {
       s3_log_bucket                       = data.terraform_remote_state.security-tools.outputs.logstore_bucket.id
       s3_log_prefix                       = local.s3_log_prefix
-      s3_published_bucket                 = data.terraform_remote_state.adg.outputs.published_bucket.id
+      s3_published_bucket                 = data.terraform_remote_state.common.outputs.published_bucket.id
       s3_ingest_bucket                    = data.terraform_remote_state.ingest.outputs.s3_buckets.input_bucket
       hbase_root_path                     = local.hbase_root_path
       proxy_no_proxy                      = replace(replace(local.no_proxy, ",", "|"), ".s3", "*.s3")
