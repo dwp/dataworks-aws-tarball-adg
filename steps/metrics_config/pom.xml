@@ -68,17 +68,17 @@
         <dependency>
             <groupId>io.dropwizard.metrics</groupId>
             <artifactId>metrics-core</artifactId>
-            <version>3.1.0</version>
+            <version>3.2.6</version>
         </dependency>
         <dependency>
             <groupId>com.amazonaws</groupId>
             <artifactId>aws-java-sdk-secretsmanager</artifactId>
-            <version>1.11.837</version>
+            <version>1.11.937</version>
         </dependency>
         <dependency>
             <groupId>com.amazonaws</groupId>
             <artifactId>aws-java-sdk-core</artifactId>
-            <version>1.11.837</version>
+            <version>1.11.937</version>
         </dependency>
     </dependencies>
 </project>

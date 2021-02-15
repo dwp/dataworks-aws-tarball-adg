@@ -47,7 +47,7 @@ data "aws_iam_policy_document" "tarball_adg_write_parquet" {
     ]
 
     resources = [
-      data.terraform_remote_state.adg.outputs.published_bucket.arn,
+      data.terraform_remote_state.common.outputs.published_bucket.arn,
     ]
   }
 
@@ -61,7 +61,7 @@ data "aws_iam_policy_document" "tarball_adg_write_parquet" {
     ]
 
     resources = [
-      "${data.terraform_remote_state.adg.outputs.published_bucket.arn}/tarball-analytical-dataset/*",
+      "${data.terraform_remote_state.common.outputs.published_bucket.arn}/tarball-analytical-dataset/*",
     ]
   }
 
@@ -77,7 +77,7 @@ data "aws_iam_policy_document" "tarball_adg_write_parquet" {
     ]
 
     resources = [
-      data.terraform_remote_state.adg.outputs.published_bucket_cmk.arn,
+      data.terraform_remote_state.common.outputs.published_bucket_cmk.arn,
     ]
   }
 }
