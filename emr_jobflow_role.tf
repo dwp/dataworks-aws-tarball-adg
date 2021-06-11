@@ -311,7 +311,7 @@ data "aws_iam_policy_document" "tarball_adg_read_tarballs" {
     ]
 
     resources = [
-      format("arn:aws:s3:::%s", data.terraform_remote_state.ingest.outputs.s3_buckets.htme_bucket),
+      format("arn:aws:s3:::%s", data.terraform_remote_state.internal_compute.outputs.htme_s3_bucket.id),
     ]
   }
 
@@ -323,7 +323,7 @@ data "aws_iam_policy_document" "tarball_adg_read_tarballs" {
     ]
 
     resources = [
-      format("arn:aws:s3:::%s/%s/*", data.terraform_remote_state.ingest.outputs.s3_buckets.htme_bucket, "business-data/tarball-mongo/ucdata/*")
+      format("arn:aws:s3:::%s/%s/*", data.terraform_remote_state.internal_compute.outputs.htme_s3_bucket.id, "business-data/tarball-mongo/ucdata/*")
     ]
   }
 

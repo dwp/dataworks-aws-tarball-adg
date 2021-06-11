@@ -12,7 +12,7 @@ locals {
   autoscaling_max_capacity        = 5
   dks_port                        = 8443
   dynamo_meta_name                = "TarballADG-metadata"
-  hbase_root_path                 = format("s3://%s", data.terraform_remote_state.ingest.outputs.s3_buckets.hbase_rootdir)
+  hbase_root_path                 = format("s3://%s", data.terraform_remote_state.internal_compute.outputs.ingest_emr_s3_prefixes.hbase_root_prefix_and_bucket)
   secret_name                     = "/concourse/dataworks/tarball-adg"
   common_tags = {
     Environment  = local.environment
@@ -92,9 +92,10 @@ locals {
     production  = "5.7.mysql_aurora.2.08.2"
   }
 
+  ingest_pushgateway_hostname = "${data.terraform_remote_state.internal_compute.outputs.private_dns.htme_service_discovery.name}.${data.terraform_remote_state.internal_compute.outputs.private_dns.htme_service_discovery_dns.name}"
   amazon_region_domain = "${data.aws_region.current.name}.amazonaws.com"
   endpoint_services    = ["dynamodb", "ec2", "ec2messages", "glue", "kms", "logs", "monitoring", ".s3", "s3", "secretsmanager", "ssm", "ssmmessages"]
-  no_proxy             = "169.254.169.254,${join(",", formatlist("%s.%s", local.endpoint_services, local.amazon_region_domain))},${data.terraform_remote_state.metrics_infrastructure.outputs.adg_pushgateway_hostname}"
+  no_proxy             = "169.254.169.254,${join(",", formatlist("%s.%s", local.endpoint_services, local.amazon_region_domain))},${local.ingest_pushgateway_hostname}"
 
   ebs_emrfs_em = {
     EncryptionConfiguration = {
