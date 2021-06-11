@@ -1,5 +1,5 @@
 terraform {
-  required_version = "{{terraform.terraform_12_version}}"
+  required_version = "{{terraform.terraform_13_version}}"
 
   backend "s3" {
     bucket         = "{{terraform.state_file_bucket}}"
@@ -118,7 +118,7 @@ variable "region" {
 }
 
 provider "aws" {
-  version = "~> 3.17.0"
+version = "~> 3.42.0"
   region  = "{{terraform.provider_region}}"
 
   assume_role {
@@ -128,7 +128,7 @@ provider "aws" {
 
 provider "aws" {
   alias = "crypto"
-  version = "~> 3.17.0"
+version = "~> 3.42.0"
   region  = var.region
 
   assume_role {

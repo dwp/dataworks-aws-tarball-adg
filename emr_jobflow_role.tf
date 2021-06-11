@@ -183,7 +183,7 @@ data "aws_iam_policy_document" "tarball_adg_read_config" {
     ]
 
     resources = [
-      "${data.terraform_remote_state.common.outputs.config_bucket_cmk.arn}",
+      data.terraform_remote_state.common.outputs.config_bucket_cmk.arn,
     ]
   }
 }
@@ -336,7 +336,7 @@ data "aws_iam_policy_document" "tarball_adg_read_tarballs" {
     ]
 
     resources = [
-      "${data.terraform_remote_state.internal_compute.outputs.compaction_bucket_cmk.arn}",
+      data.terraform_remote_state.internal_compute.outputs.compaction_bucket_cmk.arn,
     ]
   }
 }
