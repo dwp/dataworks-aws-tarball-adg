@@ -54,7 +54,7 @@ resource "aws_s3_bucket_object" "metrics_properties" {
   key        = "component/tarball-adg/metrics/metrics.properties"
   content = templatefile("${path.module}/steps/metrics_config/metrics.properties",
     {
-      adg_pushgateway_hostname = data.terraform_remote_state.metrics_infrastructure.outputs.adg_pushgateway_hostname
+      ingest_pushgateway_hostname = local.ingest_pushgateway_hostname
     }
   )
 }

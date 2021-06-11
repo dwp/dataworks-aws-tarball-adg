@@ -78,7 +78,7 @@ resource "aws_s3_bucket_object" "configurations" {
       proxy_https_host                    = data.terraform_remote_state.internal_compute.outputs.internet_proxy.host
       proxy_https_port                    = data.terraform_remote_state.internal_compute.outputs.internet_proxy.port
       emrfs_metadata_tablename            = local.emrfs_metadata_tablename
-      s3_htme_bucket                      = data.terraform_remote_state.ingest.outputs.s3_buckets.htme_bucket
+      s3_htme_bucket                      = data.terraform_remote_state.internal_compute.outputs.htme_s3_bucket.id
       spark_executor_cores                = local.spark_executor_cores
       spark_executor_memory               = local.spark_executor_memory
       spark_yarn_executor_memory_overhead = local.spark_yarn_executor_memory_overhead
