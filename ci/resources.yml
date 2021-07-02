@@ -43,3 +43,14 @@ resources:
       repository: analytical-dataset-generation-exporter
     check_every: 1h
     webhook_token: ((dataworks.concourse_github_webhook_token))
+
+  - name: dataworks-aws-tarball-adg-update-pipeline
+    type: git
+    source:
+      branch: master
+      uri: https://github.com/dwp/dataworks-aws-tarball-adg.git
+      paths:
+        - ci/*
+        - aviator.yml
+    webhook_token: ((dataworks.concourse_github_webhook_token))
+    check_every: 720h 
