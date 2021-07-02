@@ -9,3 +9,6 @@ groups:
   - name: pull-request
     jobs:
       - dataworks-aws-tarball-adg-pr
+  - name: update-pipeline
+    jobs:
+      - update-pipeline
