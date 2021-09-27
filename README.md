@@ -2,21 +2,17 @@
 
 ## Dataworks ADG infra for tarball-data based processing
 
-This repo contains Makefile and base terraform folders and jinja2 files to fit the standard pattern.
-This repo is a base to create new Terraform repos, renaming the template files and adding the githooks submodule, making the repo ready for use.
+This repository contains components depployed by terraform which were part of a spike piece of work in DataWorks. This work was to enable ingestion of the UC tarballs in to DataWorks so that they could be processed by the analytical dataset generator and made available in the analytical environment.
 
-Running aviator will create the pipeline required on the AWS-Concourse instance, in order pass a mandatory CI ran status check.  this will likely require you to login to Concourse, if you haven't already.
+The code to process the components via ADG is part of this repository.
+
+This work was subsequently abandoned as not needed and so is not deployed to the AWS environments.
+
+## CI
+
+There is an AWS Concourse pipeline in the `/ci` folder named the same as the repo which will deploy all the components. It is not currently active due to this workstream being abandoned.
+
+## Initial checkout
 
 After cloning this repo, please generate `terraform.tf` and `terraform.tfvars` files:  
 `make bootstrap`
-
-In addition, you may want to do the following: 
-
-1. Create non-default Terraform workspaces as and if required:  
-    `make terraform-workspace-new workspace=<workspace_name>` e.g.  
-    ```make terraform-workspace-new workspace=qa```
-
-1. Configure Concourse CI pipeline:
-    1. Add/remove jobs in `./ci/jobs` as required 
-    1. Create CI pipeline:  
-`aviator`
