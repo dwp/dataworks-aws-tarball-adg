@@ -1,5 +1,5 @@
 terraform {
-  required_version = "{{terraform.terraform_13_version}}"
+  required_version = "{{terraform.terraform_14_version}}"
 
   backend "s3" {
     bucket         = "{{terraform.state_file_bucket}}"
@@ -8,6 +8,15 @@ terraform {
     encrypt        = true
     kms_key_id     = "arn:aws:kms:{{terraform.state_file_region}}:{{terraform.state_file_account}}:key/{{terraform.state_file_kms_key}}"
     dynamodb_table = "remote_state_locks"
+  }
+
+  required_providers {
+    aws = {
+      version = "~> 3.42.0"
+    }
+    random = {
+      version = "~> 3.0.0"
+    }
   }
 }
 
@@ -104,9 +113,7 @@ variable "region" {
 }
 
 provider "aws" {
-version = "~> 3.42.0"
   region  = "{{terraform.provider_region}}"
-
   assume_role {
     role_arn = "arn:aws:iam::${lookup(local.account, local.environment)}:role/${var.assume_role}"
   }
@@ -114,7 +121,6 @@ version = "~> 3.42.0"
 
 provider "aws" {
   alias = "crypto"
-version = "~> 3.42.0"
   region  = var.region
 
   assume_role {
@@ -122,9 +128,7 @@ version = "~> 3.42.0"
   }
 }
 
-provider "random" {
-  version = "~> 3.0.0"
-}
+provider "random" {}
 
 // Get AWS Account ID for credentials in use
 data "aws_caller_identity" "current" {}
