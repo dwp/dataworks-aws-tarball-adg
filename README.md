@@ -1,3 +1,5 @@
+# DO NOT USE THIS REPO - MIGRATED TO GITLAB
+
 # dataworks-aws-tarball-adg
 
 ## Dataworks ADG infra for tarball-data based processing
